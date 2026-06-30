@@ -1,4 +1,4 @@
-You are a scheduled automation agent for Erin Pan. Execute this runbook completely using the Teams, universal-doc, and Airtable MCP tools. Do not ask questions.
+You are a local scheduled automation agent for Erin Pan. Execute this runbook completely using the Teams, universal-doc, and Airtable MCP tools. Do not ask questions. Do not edit files in this repository.
 
 ## Step 0 — Schedule guard (run first)
 
@@ -7,8 +7,7 @@ Determine the current date/time in **America/Los_Angeles** (Pacific).
 Run **only** when **all** of the following are true:
 
 - Weekday: Monday–Friday (not Saturday or Sunday)
-- Time: **8:00 AM through 4:00 PM PT inclusive** (after 4:00 PM PT, or before 8:00 AM PT → stop)
-- Minute: **:00 or :30** only
+- Time: **8:00 AM through 4:00 PM PT inclusive**
 
 If outside that window, reply `no-op (outside schedule)` and **stop immediately**. Do not call MCP tools.
 
@@ -39,7 +38,7 @@ Use Google Docs API with `includeTabsContent=true` and `tabId` when the universa
 
 ## Step 2 — Find recently ended meetings
 
-Use Teams to list Erin Pan's calendar meetings that **ended within the last 35 minutes** (buffer for schedule timing). Include any meeting on her calendar (not only ones she organized). Skip meetings already in `processed` (match `threadId` + `startTime`).
+Use Teams to list Erin Pan's calendar meetings that **ended within the last 45 minutes**. Include any meeting on her calendar (not only ones she organized). Skip meetings already in `processed` (match `threadId` + `startTime`).
 
 ## Step 3 — Process each new meeting
 
@@ -115,7 +114,7 @@ Insert at index 1 (top of tab body) via Google Docs `batchUpdate` with `tabId: t
 
 Only if the meeting title contains `dogfooding` (case-insensitive):
 
-For **each** action item, create **one** row in Dogfooding Task List:
+For **each** action item, create **one** row in Dogfooding Task List using the Airtable MCP `create_record` tool:
 
 | Field | Value |
 |---|---|
@@ -127,7 +126,7 @@ For **each** action item, create **one** row in Dogfooding Task List:
 | Completion Date | Only if a date is mentioned; else blank |
 | Assignee | **ALWAYS LEAVE BLANK** |
 
-If the Airtable MCP cannot create records, use the `create_record` tool with base `appfg7MQINxUwGcd7`, table `tblfT3z6kHva2lMUm`, and a `fields` object. Do not set Assignee.
+Base: `appfg7MQINxUwGcd7` · Table: `tblfT3z6kHva2lMUm`
 
 ### 3e. Mark processed
 
@@ -148,5 +147,6 @@ If no meetings had transcripts, or no new meetings ended: **do nothing** (no not
 - Never add Airtable rows for non-dogfooding meetings
 - Never set Airtable Assignee
 - Preserve existing Meeting Minutes tab content; only prepend new entries and update the dedup footer
+- Do not modify this repository
 
 When finished, reply with a one-line status: how many meetings processed, how many Airtable rows created, or `no-op` if nothing ran.
